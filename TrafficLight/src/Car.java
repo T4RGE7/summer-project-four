@@ -6,12 +6,12 @@
 public class Car {
 
 	private double x,y,rotation,xDest,yDest;
-	private long enterTime, startWaitTime, leaveTime, elapsedMoveTime, totalMoveTime, simTime;
+	private long enterTime, startWaitTime, leaveTime, elapsedMoveTime, totalMoveTime;
 	private int start, dest, id1, id2, id3;
 	private boolean stopped, drawStopped, inIntersection;
 	
 	
-	public Car(int start, int dest, double xDest, double yDest, long enterTime, long startWaitTime, int id1, long simTime) {
+	public Car(int start, int dest, double xDest, double yDest, long enterTime, long startWaitTime, int id3) {
 		this.start = start;
 		this.dest = dest;
 		this.enterTime = enterTime;
@@ -19,7 +19,6 @@ public class Car {
 		this.id1 = this.start;
 		this.id2 = this.dest;
 		this.id3 = id3;
-		this.simTime = simTime;
 	}
 	
 	
@@ -51,8 +50,8 @@ public class Car {
 		this.inIntersection = isInIntersection;
 	}
 	
-	public void increaseSimTime() {
-		this.simTime
+	public long getWaitTime() {
+		return this.startWaitTime;
 	}
 	
 }

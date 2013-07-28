@@ -3,7 +3,7 @@
  * @author James Roberts jpr242
  *
  */
-public class Street {
+public class Street implements Runnable {
 
 	private Lane[] lanes;
 	private Light[] lights;
@@ -49,5 +49,13 @@ public class Street {
 	
 	public Light[] getLights() {
 		return this.lights;
+	}
+	
+	public long getWeightedAvg() {
+		long toReturn = 0;
+		for(Lane singleLane : this.lanes) {
+			toReturn += singleLane.getWeightedAvg();
+		}
+		return toReturn;
 	}
 }

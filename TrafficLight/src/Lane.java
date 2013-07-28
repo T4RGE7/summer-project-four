@@ -36,7 +36,7 @@ public class Lane implements Runnable {
 				} else {
 					wait = 0;
 				}
-				toAdd = new Car(this.start, this.dest, -1, -1, last, last + wait, i, this.time.getTime());
+				toAdd = new Car(this.start, this.dest, -1, -1, last, last + wait, i);
 			} else {
 				//graphical
 			}
@@ -54,6 +54,16 @@ public class Lane implements Runnable {
 		} catch (EmptyListException e) {
 			return null;
 		}
+	}
+	
+	public long getWeightedAvg() {
+		long toReturn = 0;
+		try {
+			toReturn += this.queue.size() * Math.pow(System.currentTimeMillis() - this.queue.peekFirst().getWaitTime(), 2);
+		} catch (EmptyListException e) {
+			return 0;
+		}
+		return toReturn;
 	}
 	
 }
