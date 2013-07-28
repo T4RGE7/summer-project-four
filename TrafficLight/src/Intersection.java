@@ -47,17 +47,17 @@ public class Intersection implements Runnable {
 			
 			//car removal
 			for(int i = 0; i < this.lanes.length; i++) {
-				if(this.checkForGreen(this.lights[i])) {
-					for(int j = 0; j < this.lanes[i].length; j++) {
-						if(this.lights[i][j].isGreen()) {
-							//car goes
-							Car crossing = this.lanes[i][j].cross();
-							if(crossing != null) {
-								System.out.println("Removed");
-							}
-						}
-
-					}
+//				if(this.checkForGreen(this.lights[i])) {
+//					for(int j = 0; j < this.lanes[i].length; j++) {
+//						if(this.lights[i][j].isGreen()) {
+//							//car goes
+//							Car crossing = this.lanes[i][j].cross();
+//							if(crossing != null) {
+//								System.out.println("Removed");
+//							}
+//						}
+//
+//					}
 					//left
 					if(this.lights[i][0].isGreen() || (this.lanes[(i+2)%4][1].isEmpty() && this.lights[i][1].isGreen() && this.lanes[(i+2)%4][2].isEmpty())) {
 						Car crossing = this.lanes[i][0].cross();
@@ -67,22 +67,59 @@ public class Intersection implements Runnable {
 					}
 					//straight
 					if(this.lights[i][1].isGreen()) {
-						Car crossing = this.lanes[i][0].cross();
+						Car crossing = this.lanes[i][1].cross();
 						if(crossing != null) {
 							System.out.println("Straight");
 						}
 					}
 					//right
-					if(this.lights[i][2].isGreen() || (this.lanes[])) {
-						
+					if(this.lights[i][2].isGreen() || (this.lanes[(i+1)%4][1].isEmpty() && this.lights[(i+2)%4][0].isRed())) {
+						Car crossing = this.lanes[i][2].cross();
+						if(crossing != null) {
+							System.out.println("Straight");
+						}
 					}
 					
 				}
-			}
+	//		}
 			
 			//light changing
-			if()
+			if(!this.checkForNotRed(this.lights[0]) || !this.checkForNotRed(this.lights[2])) {
+				if(this.getWeightedAvg(0) < this.getWeightedAvg(1)) {
+					this.turnToRed(this.lights[0]);
+					this.turnToRed(this.lights[2]);
+					changing = true;
+				}
+				
+				if(changing && (this.checkForNotRed(this.lights[0]) || this.checkForNotRed(this.lights[2]))) {
+					this.turnToRed(this.lights[0]);
+					this.turnToRed(this.lights[2]);
+				} else if(changing) {
+					changing = false;
+					this.changeToGreen(1);
+				}
+			} else {
+				if(this.getWeightedAvg(1) < this.getWeightedAvg(0)) {
+					this.turnToRed(this.lights[1]);
+					this.turnToRed(this.lights[3]);
+					changing = true;
+				}
+				
+				if(changing && (this.checkForNotRed(this.lights[1]) || this.checkForNotRed(this.lights[3]))) {
+					this.turnToRed(this.lights[1]);
+					this.turnToRed(this.lights[3]);
+				} else if(changing) {
+					changing = false;
+					this.changeToGreen(0);
+				}
+			}
 			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -115,5 +152,49 @@ public class Intersection implements Runnable {
 			}
 		}
 		return false;
+	}
+	
+	private boolean checkForNotRed(Light[] lights) {
+		for(Light single : lights) {
+			if(!single.isRed()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private long getWeightedAvg(int i) {
+		long toReturn = 0;
+		
+		for(Lane single : this.lanes[i]) {
+			toReturn += single.getWeightedAvg();
+		}
+		for(Lane single : this.lanes[i + 2]) {
+			toReturn += single.getWeightedAvg();
+		}
+		return toReturn;
+	}
+	
+	private void turnToRed(Light[] lights) {
+		for(Light single : lights) {
+			if(!single.isRed()) {
+				single.cycle();
+			}
+		}
+	}
+	
+	private void changeToGreen(int j) {
+		for(int i = 0; i < 3; i++) {
+			if(!this.lanes[j][i].isEmpty()) {
+				while(!this.lights[j][i].isGreen()) {
+					this.lights[j][i].cycle();
+				}
+			}
+			if(!this.lanes[j+2][i].isEmpty()) {
+				while(!this.lights[j+2][i].isGreen()) {
+					this.lights[j+2][i].cycle();
+				}
+			}
+		}
 	}
 }
