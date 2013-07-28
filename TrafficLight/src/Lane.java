@@ -40,6 +40,7 @@ public class Lane implements Runnable {
 			} else {
 				//graphical
 			}
+			System.out.println(this.adjusted + " Queue " + this.start + " car made " + System.currentTimeMillis());
 			this.queue.add(toAdd);
 		}
 	}
@@ -66,4 +67,7 @@ public class Lane implements Runnable {
 		return toReturn;
 	}
 	
+	public int size() {
+		return this.queue.size();
+	}
 }

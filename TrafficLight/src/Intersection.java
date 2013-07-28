@@ -40,11 +40,12 @@ public class Intersection implements Runnable {
 		for(Street street : this.streets) {
 			new Thread(street).run();
 		}
+		System.out.println("Intersection started");
 		long startChangeTime = -1;
 		boolean changing = false;
 		
 		while(this.checkAllQueues() || this.checkAllThreads()) {
-			
+			System.out.println(this.lanes[0][1].size());
 			//car removal
 			for(int i = 0; i < this.lanes.length; i++) {
 //				if(this.checkForGreen(this.lights[i])) {
