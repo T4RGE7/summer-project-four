@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * 
  * @author James Roberts jpr242
@@ -7,9 +9,28 @@ public class Driver {
 	
 	public static void main(String[] args) {
 		System.out.println("Welcome to the TrafficLight Simulator");
-		int numCars = 100;
-		double[] percentages = {.25,.25,.25,.25};
+		System.out.println("GUI or No Gui");
 		boolean sim = true;
+		if(new Scanner(System.in).nextLine().toUpperCase().charAt(0) == 'G') {
+			sim = true;
+		} else {
+			sim = false;
+		}
+		
+		System.out.println("What percentages would you like? (Split by \",\") ");
+		String[] temp = new Scanner(System.in).nextLine().split(",");
+
+		double[] percentages = {.25,.25,.25,.25};
+		if(temp.length == 4) {
+			try{
+				for(int i = 0; i < 4; i++) {
+					percentages[i] = Double.parseDouble(temp[i]);
+				}
+			} catch (Exception e){}
+		}
+		
+		int numCars = 100;
+	//	double[] percentages = {.25,.25,.25,.25};
 		long waitTime = 2500;
 		Intersection test;// = new Intersection(numCars, percentages, sim, waitTime);
 //		LinkedList<Long> times = test.getWaitingTimes();

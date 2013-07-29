@@ -109,7 +109,7 @@ public class Intersection implements Runnable {
 
 			
 			if (this.lastTimeChanged + this.waitTime/(this.sim ? 10 : 1) < System.currentTimeMillis()/* || this.checkForRed(dir)*/ /*|| this.checkForRed(dir)*/) {
-				if (this.timeToChange() || this.checkForRed(dir)) {
+				if (this.timeToChange() || this.checkForRed((dir == 1 ? 0 : 1))) {
 					this.cycleToRed(dir);
 					this.sleep(1000/(this.sim ? 10 : 1));
 					this.cycleToRed(dir);
@@ -295,8 +295,16 @@ public class Intersection implements Runnable {
 	private boolean checkForRed(int j) {
 		boolean toReturn = false;
 		long testing[] = new long[4];
-		testing[0] = (long)Math.sqrt(this.lanes[j][1].weightedAvg()/(this.lanes[j][1].size() == 0 ? 1 : this.lanes[j][0].size()));
-		testing[1] = (long)Math.sqrt(this.lanes[j+2][1].weightedAvg()/(this.lanes[j+2][1].size() == 0 ? 1 : this.lanes[j][1].size()));
+		try{
+			testing[0] = (long)Math.sqrt(this.lanes[j][1].weightedAvg()/(this.lanes[j][1].size() == 0 ? 1 : this.lanes[j][0].size()));
+		} catch (ArithmeticException e) {
+			testing[0] = 0;
+		}
+		try{
+			testing[1] = (long)Math.sqrt(this.lanes[j+2][1].weightedAvg()/(this.lanes[j+2][1].size() == 0 ? 1 : this.lanes[j][1].size()));
+		} catch (ArithmeticException e) {
+			testing[1] = 0;
+		}
 //		j+=2;
 //		testing[2] = (long)Math.sqrt(this.lanes[j][0].weightedAvg()/(this.lanes[j][0].size() == 0 ? 1 : this.lanes[j][0].size()));
 //		testing[3] = (long)Math.sqrt(this.lanes[j][1].weightedAvg()/(this.lanes[j][1].size() == 0 ? 1 : this.lanes[j][1].size()));;
@@ -304,6 +312,7 @@ public class Intersection implements Runnable {
 		for(long toTest : testing) {
 			if(toTest > 8*this.waitTime || toTest > Math.pow(this.waitTime, 4)) {
 				toReturn = true;
+				double[] percentages = {.25,.25,.25,.25};
 				System.out.println("Forced");
 				break;
 			}
