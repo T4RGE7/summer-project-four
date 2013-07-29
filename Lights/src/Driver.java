@@ -8,6 +8,7 @@ public class Driver {
 		Intersection test = new Intersection(numCars, percentages, sim);
 		
 		Thread t = new Thread(test);
+		t.start();
 		try {
 			t.join();
 		} catch (InterruptedException e) {

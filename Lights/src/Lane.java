@@ -48,6 +48,19 @@ public class Lane implements Runnable{
 		return this.queue.isEmpty();
 	}
 	
+	public long weightedAvg() {
+		try {
+			return (long) (this.queue.size() * Math.pow((System.currentTimeMillis() - this.queue.peekFirst().getCreationTime()), 2));
+		} catch (EmptyListException e) {
+			return (long) 0;
+		}
+
+	}
+	
+	public int size() {
+		return this.queue.size();
+	}
+	
 	@Override
 	public void run() {
 		System.out.println("Lane " + this.startId + "-" + this.endId + " Started");

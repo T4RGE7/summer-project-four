@@ -32,7 +32,6 @@ public class Street implements Runnable {
 		for(int i = 0; i < this.lanes.length; i++) {
 			this.lanes[i] = new Lane(this.startId, i, this.adjusted, this.percentages[i], this.sim);
 			this.threads[i] = new Thread(this.lanes[i]);
-			this.threads[i].start();
 			System.out.println(this.threads[i]);
 			this.lights[i] = this.lanes[i].getLight();
 		}
@@ -56,6 +55,14 @@ public class Street implements Runnable {
 	
 	public Light[] getLights() {
 		return this.lights;
+	}
+	
+	public long getWeightedAvg() {
+		long toReturn = 0;
+		for(Lane lane : this.lanes) {
+			toReturn += lane.weightedAvg();
+		}
+		return toReturn;
 	}
 	
 }
