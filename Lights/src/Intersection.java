@@ -132,6 +132,7 @@ public class Intersection implements Runnable {
 			}
 			this.sleep(1000/(this.sim ? 10 : 1));
 		}
+		this.printer.close();
 	}
 	
 	private void rightTurns() {
