@@ -7,12 +7,66 @@ public class Car {
 
 	private long creationTime, waitingTime;
 	private int startId, endId, numId;
-	private double rotation, x, y, anchorY, anchorX;
-	private boolean front = false;
+	private double rotation, x, y, anchorY, anchorX, endRot;
+	private boolean atEnd = false;
 	private int spot;
+	private double totalTime = 2;
 	
 	public void move(float elapsedTime) {
+		totalTime -= elapsedTime;
+		if(endRot != rotation) {
+			switch(this.startId) {
+			case 0: if(this.endId == 0) {
+				x = this.anchorX - (endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY - (endRot - rotation)*(this.totalTime/2);
+			} else {
+				x = this.anchorX + (endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY - (endRot - rotation)*(this.totalTime/2);
+			}
+			break;
+			case 1: if(this.endId == 0) {
+				x = this.anchorX + (endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY - (endRot - rotation)*(this.totalTime/2);
+			} else {
+				x = this.anchorX + (endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY + (endRot - rotation)*(this.totalTime/2);
+			}			
+				break;
+			case 2: if(this.endId == 0) {
+				x = this.anchorX + (endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY + (endRot - rotation)*(this.totalTime/2);
+			} else {
+				x = this.anchorX - (endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY + (endRot - rotation)*(this.totalTime/2);
+			}
+				break;
+			case 3: if(this.endId == 0) {
+				x = this.anchorX - (endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY + (endRot - rotation)*(this.totalTime/2);
+			} else {
+				x = this.anchorX - (endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY - (endRot - rotation)*(this.totalTime/2);
+			}
+			}
+		} else {
+			switch(this.endId) {
+			case 0: this.y = 30 + 180*(this.totalTime/2);
+				break;
+			case 1: this.x = 300 - 180*(this.totalTime/2);
+				break;
+			case 2: this.y = 300 - 180*(this.totalTime/2);
+				break;
+			case 3: this.x = 30 + 180*(this.totalTime/2);
+			}
+		}
 		
+		if(totalTime < 0) {
+			this.atEnd = true;
+		}
+	}
+	
+	public boolean isAtEnd() {
+		return this.atEnd;
 	}
 	
 	public Car(int startId, int endId, int numId) {
@@ -31,12 +85,15 @@ public class Car {
 			if(this.endId == 0) {
 				this.anchorX = 60;
 				this.anchorY = 270;
+				this.endRot = 270;
 			} else if(this.endId == 2) {
 				this.anchorX = 270;
 				this.anchorY = 270;
+				this.endRot = 90;
 			} else {
 				this.anchorX = -1;
 				this.anchorY = -1;
+				this.endRot = 0;
 			}
 			break;
 		case 1: this.rotation = 90;
@@ -45,12 +102,15 @@ public class Car {
 			if(this.endId == 0) {
 				this.anchorX = 60;
 				this.anchorY = 60;
+				this.endRot = 0;
 			} else if(this.endId == 2) {
 				this.anchorX = 60;
 				this.anchorY = 270;
+				this.endRot = 180;
 			} else {
 				this.anchorX = -1;
 				this.anchorY = -1;
+				this.endRot = 90;
 			}
 			break;
 		case 2: this.rotation = 180;
@@ -59,12 +119,15 @@ public class Car {
 			if(this.endId == 0) {
 				this.anchorX = 270;
 				this.anchorY = 60;
+				this.endRot = 90;
 			} else if(this.endId == 2) {
 				this.anchorX = 60;
 				this.anchorY = 60;
+				this.endRot = 270;
 			} else {
 				this.anchorX = -1;
 				this.anchorY = -1;
+				this.endRot = 180;
 			}
 			break;
 		case 3: this.rotation = 270;
@@ -73,12 +136,15 @@ public class Car {
 			if(this.endId == 0) {
 				this.anchorX = 270;
 				this.anchorY = 270;
+				this.endRot = 180;
 			} else if(this.endId == 2) {
 				this.anchorX = 270;
 				this.anchorY = 60;
+				this.endRot = 0;
 			} else {
 				this.anchorX = -1;
 				this.anchorY = -1;
+				this.endRot = 270;
 			}
 			break;
 		}
@@ -147,5 +213,17 @@ public class Car {
 	
 	public String toString() {
 		return this.numId + ") Start: " + this.startId + ", Dest: " + this.endId + ", Created: " + this.creationTime;
+	}
+	
+	public int getX() {
+		return (int)this.x;
+	}
+	
+	public int getY() {
+		return (int)this.y;
+	}
+	
+	public double getRotation() {
+		return this.endRot - this.rotation;
 	}
 }

@@ -81,7 +81,7 @@ public class Driver {
 		boolean strikeOne = false;
 		boolean up = false;
 		for(int i = 0; i < 20; i++) {
-			test = new Intersection(numCars, percentages, sim, waitTime);
+			test = new Intersection(numCars, percentages, true, waitTime);
 			LinkedList<Long> times = test.getWaitingTimes();
 			Thread t = new Thread(test);
 			t.start();
@@ -147,6 +147,22 @@ public class Driver {
 			
 		
 		System.out.println("Best wait time estimated to be: " + lowWait/1000.0 + " seconds, for an average wait time of " + lowWaitTime + " seconds per car.");
+	
+		Thread last;
+		if(sim) {
+			test = new Intersection(numCars, percentages, false, lowWait);
+			JimsCanvas canvas = new JimsCanvas(330, 330, test);
+			canvas.setupAndDisplay();
+			last = new Thread(test);
+			last.run();
+			try {
+				last.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 }

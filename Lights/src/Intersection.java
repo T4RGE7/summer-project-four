@@ -1,3 +1,4 @@
+import java.awt.Graphics2D;
 import java.util.Random;
 
 
@@ -15,6 +16,7 @@ public class Intersection implements Runnable {
 	private long waitTime;
 	private Random rand;
 	private LinkedList<Long> times;
+	private LinkedList<Car> toDraw;
 	
 	public Intersection(int totalNumCars, double[] percentages, boolean sim, long waitTime) {
 		this.threads = new Thread[4][3];
@@ -24,6 +26,7 @@ public class Intersection implements Runnable {
 		this.totalNumCars = totalNumCars;
 		this.percentages = percentages;
 		this.sim = sim;
+		this.toDraw = new LinkedList<Car>();
 		this.times = new LinkedList<Long>();
 		this.waitTime = waitTime;
 		this.rand = new Random();
@@ -122,6 +125,7 @@ public class Intersection implements Runnable {
 					Car toCross = this.lanes[i][2].cross();
 					if(toCross != null) {
 						if(!sim){
+							this.toDraw.insertLast(toCross);
 							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
 						}
 						this.times.insert(toCross.getWaitingTime());
@@ -138,6 +142,7 @@ public class Intersection implements Runnable {
 					Car toCross = this.lanes[i][1].cross();
 					if(toCross != null) {
 						if(!sim){
+							this.toDraw.insertLast(toCross);
 							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
 						}
 						this.times.insert(toCross.getWaitingTime());
@@ -154,6 +159,7 @@ public class Intersection implements Runnable {
 					Car toCross = this.lanes[i][0].cross();
 					if(toCross != null) {
 						if(!sim){
+							this.toDraw.insertLast(toCross);
 							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
 						}
 						this.times.insert(toCross.getWaitingTime());
@@ -359,5 +365,27 @@ public class Intersection implements Runnable {
 	
 	public LinkedList<Long> getWaitingTimes() {
 		return this.times;
+	}
+	
+	public LinkedList<Car> getToDraw() {
+		return this.toDraw;
+	}
+	
+	public void draw(Graphics2D g, float elapsedTime, JimsCanvas canvas) {
+		try {
+			while(this.toDraw.peekFirst().isAtEnd()) {
+				try {
+					this.toDraw.removeFirst();
+				} catch (EmptyListException e) {}
+			}
+		} catch (EmptyListException e) {}
+		for(int i = 0; i < this.toDraw.size(); i++) {
+			try {
+				Car toDraw = this.toDraw.peek(i);
+				toDraw.move(elapsedTime);
+				canvas.drawCar(g, toDraw);
+			} catch (EmptyListException e) {}
+			
+		}
 	}
 }
