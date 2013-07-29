@@ -29,7 +29,7 @@ public class Driver {
 			} catch (Exception e){}
 		}
 		
-		int numCars = 100;
+		int numCars = 44;
 	//	double[] percentages = {.25,.25,.25,.25};
 		long waitTime = 2900;
 		Intersection test;// = new Intersection(numCars, percentages, sim, waitTime);
@@ -122,10 +122,10 @@ public class Driver {
 					total++;
 				} catch (EmptyListException e) {break;}
 			}
-			System.out.println(total  + " total cars passed through with an average wait of " + sum/(total*(sim ? 100 : 1000)) + " seconds. (WaitTime = " + waitTime + ")");
+			System.out.println(total  + " total cars passed through with an average wait of " + sum/(total*(true ? 100 : 1000)) + " seconds. (WaitTime = " + waitTime + ")");
 			if(current == -1) {
 				current = sum;
-				lowWaitTime = current/(total*(sim ? 100 : 1000));
+				lowWaitTime = current/(total*(true ? 100 : 1000));
 				lowWait = waitTime;
 			} /*else if(high == -1 && low == -1) {
 				if(sum > current) {
@@ -155,24 +155,26 @@ public class Driver {
 				} else if(sum > current){} else {
 					
 					current = sum;
-					lowWaitTime = current/(total*(sim ? 100 : 1000));
+					lowWaitTime = current/(total*(true ? 100 : 1000));
 					lowWait = waitTime;
 					
 				}
 			}
 			
 			if(up) {
-				waitTime += 100;
+				waitTime += 200;
 			} else {
-				waitTime -= 100;
+				waitTime -= 200;
 			}
 		}
 			
 			
 			
 		
-		System.out.println("Best minimum light wait time estimated to be: " + lowWait/1000.0 + " seconds, for an average wait time of " + lowWaitTime + " seconds per car.");
+		System.out.print("Best minimum light wait time estimated to be: " + lowWait/1000.0 + " seconds, for an average wait time of " /*+ lowWaitTime/(!sim ? 1 : 10) + " seconds per car."*/);
 	
+		System.out.print(lowWaitTime);
+		System.out.println(" seconds per car.");
 		Thread last;
 		if(sim) {
 			test = new Intersection(numCars, percentages, false, lowWait);

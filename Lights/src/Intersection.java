@@ -313,7 +313,7 @@ public class Intersection implements Runnable {
 			if(toTest > 8*this.waitTime/(this.sim ? 10 : 1) || toTest > Math.pow(this.waitTime / (this.sim ? 10 : 1), 4)) {
 				toReturn = true;
 				//double[] percentages = {.25,.25,.25,.25};
-				System.out.println("Forced");
+			//	System.out.println("Forced");
 				break;
 			}
 		}
