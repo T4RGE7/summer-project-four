@@ -14,38 +14,44 @@ public class Car {
 	
 	public void move(float elapsedTime) {
 		totalTime -= elapsedTime;
+		this.rotation += Math.PI*elapsedTime/2;
+		if(this.startId == 0 && this.endId == 0) {
+			
+		}
+//		return;
 		if(endRot != rotation) {
 			switch(this.startId) {
 			case 0: if(this.endId == 0) {
-				x = this.anchorX - (endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY - (endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX - 75*Math.cos((endRot - rotation));
+				y = this.anchorY - 75*Math.sin((endRot - rotation));
 			} else {
-				x = this.anchorX + (endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY - (endRot - rotation)*(this.totalTime/2);
+				System.out.print("here\n");
+				x = this.anchorX + 15*Math.cos((endRot - rotation))*Math.abs(Math.cos(endRot - rotation));
+				y = this.anchorY - 15*Math.sin((endRot - rotation))*Math.abs(Math.sin(endRot - rotation));
 			}
 			break;
 			case 1: if(this.endId == 0) {
-				x = this.anchorX + (endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY - (endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX + 75*Math.cos(endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY - 75*Math.sin(endRot - rotation)*(this.totalTime/2);
 			} else {
-				x = this.anchorX + (endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY + (endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX + 15*Math.cos(endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY + 15*Math.sin(endRot - rotation)*(this.totalTime/2);
 			}			
 				break;
 			case 2: if(this.endId == 0) {
-				x = this.anchorX + (endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY + (endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX + 75*Math.cos(endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY + 75*Math.sin(endRot - rotation)*(this.totalTime/2);
 			} else {
-				x = this.anchorX - (endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY + (endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX - 15*Math.cos(endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY + 15*Math.sin(endRot - rotation)*(this.totalTime/2);
 			}
 				break;
 			case 3: if(this.endId == 0) {
-				x = this.anchorX - (endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY + (endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX - 75*Math.cos(endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY + 75*Math.sin(endRot - rotation)*(this.totalTime/2);
 			} else {
-				x = this.anchorX - (endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY - (endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX - 15*Math.cos(endRot - rotation)*(this.totalTime/2);
+				y = this.anchorY - 15*Math.sin(endRot - rotation)*(this.totalTime/2);
 			}
 			}
 		} else {
@@ -87,8 +93,8 @@ public class Car {
 				this.anchorY = 270;
 				this.endRot = 270;
 			} else if(this.endId == 2) {
-				this.anchorX = 270;
-				this.anchorY = 270;
+				this.anchorX = 265;
+				this.anchorY = 265;
 				this.endRot = 90;
 			} else {
 				this.anchorX = -1;
@@ -223,7 +229,15 @@ public class Car {
 		return (int)this.y;
 	}
 	
+	public int getAnchorX() {
+		return (int) this.anchorX;
+	}
+	
+	public int getAnchorY() {
+		return (int) this.anchorY;
+	}
+	
 	public double getRotation() {
-		return this.endRot - this.rotation;
+		return this.rotation;
 	}
 }

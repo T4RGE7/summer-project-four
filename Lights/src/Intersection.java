@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Random;
 
@@ -384,6 +385,8 @@ public class Intersection implements Runnable {
 				Car toDraw = this.toDraw.peek(i);
 				toDraw.move(elapsedTime);
 				canvas.drawCar(g, toDraw);
+				g.setColor(Color.pink);
+				g.drawOval(toDraw.getAnchorX() - 5, toDraw.getAnchorY() - 5, 10, 10);
 			} catch (EmptyListException e) {}
 			
 		}

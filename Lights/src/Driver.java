@@ -4,7 +4,7 @@ public class Driver {
 	public static void main(String[] args) {
 		System.out.println("Welcome to the TrafficLight Simulator");
 		int numCars = 100;
-		double[] percentages = {.4,.1,.4,.1};
+		double[] percentages = {1,.0,.0,.0};
 		boolean sim = true;
 		long waitTime = 2500;
 		Intersection test;// = new Intersection(numCars, percentages, sim, waitTime);
@@ -80,7 +80,7 @@ public class Driver {
 		long lowWaitTime = 0;
 		boolean strikeOne = false;
 		boolean up = false;
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < 1; i++) {
 			test = new Intersection(numCars, percentages, true, waitTime);
 			LinkedList<Long> times = test.getWaitingTimes();
 			Thread t = new Thread(test);
