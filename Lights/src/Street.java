@@ -9,8 +9,8 @@ public class Street implements Runnable {
 	private Thread[] threads;
 	private Light[] lights;
 	private int startId, totalCars, adjusted;
-	//final double[] percentages = {.25,.5,.25};
-	final double[] percentages = {0, 0, 1};
+	final double[] percentages = {.25,.5,.25};
+	//final double[] percentages = {0, 0, 1};
 	private double overallPercentage;
 	private boolean sim;
 	

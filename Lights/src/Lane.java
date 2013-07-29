@@ -48,6 +48,16 @@ public class Lane implements Runnable{
 		return this.queue.isEmpty();
 	}
 	
+	public Car peekFirst() {
+		try {
+			return this.queue.peekFirst();
+		} catch (EmptyListException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public long weightedAvg() {
 		try {
 			return (long) (this.queue.size() * Math.pow((System.currentTimeMillis() - this.queue.peekFirst().getCreationTime()), 2));

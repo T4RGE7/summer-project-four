@@ -7,62 +7,62 @@ public class Car {
 
 	private long creationTime, waitingTime;
 	private int startId, endId, numId;
-	private double rotation, x, y, anchorY, anchorX, endRot;
+	private double rotation, x, y, anchorY, anchorX, endRot, deltaRot;
 	private boolean atEnd = false;
 	private int spot;
-	private double totalTime = 2;
+	private double totalTime = 1;
 	
 	public void move(float elapsedTime) {
 		totalTime -= elapsedTime;
-		this.rotation += Math.PI*elapsedTime/2;
 		if(this.startId == 0 && this.endId == 0) {
 			
 		}
 //		return;
 		if(endRot != rotation) {
+			this.rotation += this.deltaRot*(elapsedTime/1.0);
 			switch(this.startId) {
 			case 0: if(this.endId == 0) {
-				x = this.anchorX - 75*Math.cos((endRot - rotation));
-				y = this.anchorY - 75*Math.sin((endRot - rotation));
+				x = this.anchorX + 135*Math.cos((Math.PI*rotation/180.0))*Math.cos(Math.PI*rotation/180.0);
+				y = this.anchorY - 135*Math.sin((Math.PI*rotation/180.0))*Math.sin(Math.PI*rotation/180.0);
 			} else {
-				System.out.print("here\n");
-				x = this.anchorX + 15*Math.cos((endRot - rotation))*Math.abs(Math.cos(endRot - rotation));
-				y = this.anchorY - 15*Math.sin((endRot - rotation))*Math.abs(Math.sin(endRot - rotation));
+				//System.out.print("here\n");
+				x = this.anchorX - 15*Math.cos((Math.PI*rotation/180.0))*Math.cos(Math.PI*rotation/180.0);
+				y = this.anchorY - 15*Math.sin((Math.PI*rotation/180.0))*Math.sin(Math.PI*rotation/180.0);
 			}
 			break;
 			case 1: if(this.endId == 0) {
-				x = this.anchorX + 75*Math.cos(endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY - 75*Math.sin(endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX + 135*Math.cos((Math.PI*rotation/180.0))*Math.cos(Math.PI*rotation/180.0);
+				y = this.anchorY + 135*Math.sin((Math.PI*rotation/180.0))*Math.sin(Math.PI*rotation/180.0);
 			} else {
-				x = this.anchorX + 15*Math.cos(endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY + 15*Math.sin(endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX + 15*Math.cos((Math.PI*rotation/180.0))*Math.cos(Math.PI*rotation/180.0);
+				y = this.anchorY - 15*Math.sin((Math.PI*rotation/180.0))*Math.sin(Math.PI*rotation/180.0);
 			}			
 				break;
 			case 2: if(this.endId == 0) {
-				x = this.anchorX + 75*Math.cos(endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY + 75*Math.sin(endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX - 135*Math.cos((Math.PI*rotation/180.0))*Math.cos(Math.PI*rotation/180.0);
+				y = this.anchorY + 135*Math.sin((Math.PI*rotation/180.0))*Math.sin(Math.PI*rotation/180.0);
 			} else {
-				x = this.anchorX - 15*Math.cos(endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY + 15*Math.sin(endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX + 15*Math.cos((Math.PI*rotation/180.0))*Math.cos(Math.PI*rotation/180.0);
+				y = this.anchorY + 15*Math.sin((Math.PI*rotation/180.0))*Math.sin(Math.PI*rotation/180.0);
 			}
 				break;
 			case 3: if(this.endId == 0) {
-				x = this.anchorX - 75*Math.cos(endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY + 75*Math.sin(endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX - 135*Math.cos((Math.PI*rotation/180.0))*Math.cos(Math.PI*rotation/180.0);
+				y = this.anchorY - 135*Math.sin((Math.PI*rotation/180.0))*Math.sin(Math.PI*rotation/180.0);
 			} else {
-				x = this.anchorX - 15*Math.cos(endRot - rotation)*(this.totalTime/2);
-				y = this.anchorY - 15*Math.sin(endRot - rotation)*(this.totalTime/2);
+				x = this.anchorX - 15*Math.cos((Math.PI*rotation/180.0))*Math.cos(Math.PI*rotation/180.0);
+				y = this.anchorY + 15*Math.sin((Math.PI*rotation/180.0))*Math.sin(Math.PI*rotation/180.0);
 			}
 			}
 		} else {
-			switch(this.endId) {
-			case 0: this.y = 30 + 180*(this.totalTime/2);
+			switch(this.startId) {
+			case 0: this.y = 30 + 180*(this.totalTime/1);
 				break;
-			case 1: this.x = 300 - 180*(this.totalTime/2);
+			case 1: this.x = 300 - 180*(this.totalTime/1);
 				break;
-			case 2: this.y = 300 - 180*(this.totalTime/2);
+			case 2: this.y = 300 - 180*(this.totalTime/1);
 				break;
-			case 3: this.x = 30 + 180*(this.totalTime/2);
+			case 3: this.x = 30 + 180*(this.totalTime/1);
 			}
 		}
 		
@@ -91,10 +91,10 @@ public class Car {
 			if(this.endId == 0) {
 				this.anchorX = 60;
 				this.anchorY = 270;
-				this.endRot = 270;
+				this.endRot = -90;
 			} else if(this.endId == 2) {
-				this.anchorX = 265;
-				this.anchorY = 265;
+				this.anchorX = 270;
+				this.anchorY = 270;
 				this.endRot = 90;
 			} else {
 				this.anchorX = -1;
@@ -120,7 +120,7 @@ public class Car {
 			}
 			break;
 		case 2: this.rotation = 180;
-			this.x = 195 + 30*(this.endId);
+			this.x = 75 + 30*(this.endId);
 			this.y = 30;
 			if(this.endId == 0) {
 				this.anchorX = 270;
@@ -146,7 +146,7 @@ public class Car {
 			} else if(this.endId == 2) {
 				this.anchorX = 270;
 				this.anchorY = 60;
-				this.endRot = 0;
+				this.endRot = 360;
 			} else {
 				this.anchorX = -1;
 				this.anchorY = -1;
@@ -154,6 +154,7 @@ public class Car {
 			}
 			break;
 		}
+		this.deltaRot = this.endRot - this.rotation;
 	}
 
 	/**

@@ -78,7 +78,8 @@ public JimsCanvas(int w, int h, Intersection field) {
 		int x = toDraw.getX();
 		int y = toDraw.getY();
 		double rotation = toDraw.getRotation();
-		System.out.println(rotation);
+//		System.out.println(rotation);
+//		System.out.println("RAD: " + Math.PI * rotation/180);
 		old.translate(x, y);
 		old.rotate(Math.PI * rotation/180);
 //		old.rotate(rotation/180.0, toDraw.getAnchorX(), toDraw.getAnchorY());

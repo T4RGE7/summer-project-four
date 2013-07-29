@@ -4,7 +4,7 @@ public class Driver {
 	public static void main(String[] args) {
 		System.out.println("Welcome to the TrafficLight Simulator");
 		int numCars = 100;
-		double[] percentages = {1,.0,.0,.0};
+		double[] percentages = {.25,.25,.25,.25};
 		boolean sim = true;
 		long waitTime = 2500;
 		Intersection test;// = new Intersection(numCars, percentages, sim, waitTime);

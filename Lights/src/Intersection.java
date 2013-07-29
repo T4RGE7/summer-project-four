@@ -390,5 +390,29 @@ public class Intersection implements Runnable {
 			} catch (EmptyListException e) {}
 			
 		}
+		for(int i = 0; i < this.lanes.length; i++) {
+			for(int j = 0; j < this.lanes[i].length; j++) {
+				if (!this.lanes[i][j].isEmpty()) {
+					canvas.drawCar(g, this.lanes[i][j].peekFirst());
+				}
+			}
+		}
+		for(int i = 0; i < this.lights[0].length; i++) {
+			g.setColor(this.lights[0][i].getColor());
+			g.fillOval(182 + 30 * i, 230, 20, 20);
+		}
+		for(int i = 0; i < this.lights[1].length; i++) {
+			g.setColor(this.lights[1][i].getColor());
+			g.fillOval(70, 182 + 30 * i, 20, 20);
+		}
+		for(int i = 0; i < this.lights[2].length; i++) {
+			g.setColor(this.lights[2][i].getColor());
+			g.fillOval(62 + 30 * i, 70, 20, 20);
+		}
+		for(int i = 0; i < this.lights[3].length; i++) {
+			g.setColor(this.lights[3][i].getColor());
+			g.fillOval(230, 62 + 30 * i, 20, 20);
+		}
+		
 	}
 }
