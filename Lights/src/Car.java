@@ -5,7 +5,7 @@
  */
 public class Car {
 
-	private long creationTime;
+	private long creationTime, waitingTime;
 	private int startId, endId, numId;
 	
 	public Car(int startId, int endId, int numId) {
@@ -69,6 +69,11 @@ public class Car {
 	 */
 	public void setNumId(int numId) {
 		this.numId = numId;
+	}
+	
+	public long getWaitingTime() {
+		this.waitingTime = System.currentTimeMillis() - this.creationTime;
+		return this.waitingTime;
 	}
 	
 	public String toString() {

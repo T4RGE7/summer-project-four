@@ -13,29 +13,41 @@ public class Light {
 		this.green = false;
 	}
 	
-	public boolean isGreen() {
+	public synchronized boolean isGreen() {
 		return this.green;
 	}
 	
-	public boolean isYellow() {
+	public synchronized boolean isYellow() {
 		return this.yellow;
 	}
 	
-	public boolean isRed() {
+	public synchronized boolean isRed() {
 		return this.red;
 	}
 	
-	public void cycle() {
+	public synchronized void cycle() {
 		if(this.red) {
 			this.red = false;
-			this.yellow = true;
+			this.green = true;
 		} else if(this.yellow) {
 			this.yellow = false;
-			this.green = true;
+			this.red = true;
 		} else {
 			this.green = false;
-			this.red = true;
+			this.yellow = true;
 		}
 	}
 	
+	public String toString() {
+		if(this.red) {
+			return "Red";
+		}
+		if(this.yellow) {
+			return "Yellow";
+		}
+		if(this.green) {
+			return "Green";
+		}
+		return "";
+	}
 }

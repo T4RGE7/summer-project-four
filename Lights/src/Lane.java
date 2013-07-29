@@ -29,7 +29,7 @@ public class Lane implements Runnable{
 	
 	private void setUp() {
 		this.adjustedNumber = (int)(this.initialNumber * this.percentage);
-		System.out.println("Lane " + this.startId + "-" + this.endId + " created with " + this.adjustedNumber + " Cars to be made.");
+//		System.out.println("Lane " + this.startId + "-" + this.endId + " created with " + this.adjustedNumber + " Cars to be made.");
 	}
 	
 	public Car cross() {
@@ -63,11 +63,12 @@ public class Lane implements Runnable{
 	
 	@Override
 	public void run() {
-		System.out.println("Lane " + this.startId + "-" + this.endId + " Started");
+//		System.out.println("Lane " + this.startId + "-" + this.endId + " Started");
 		for(int i = 0; i < this.adjustedNumber; i++) {
-			long toSleep1 = (long) (1000/this.percentage);
+			long toSleep1 = (long) (1000/Math.pow(this.percentage, 1));
 			toSleep1 /= (this.sim ? 10 : 1);
-			long toSleep0 = (1000);
+			//long toSleep0 = (long) (1000/Math.pow(this.percentage, 1.75));
+			long toSleep0 = (long) (1000);
 			toSleep0 /= (this.sim ? 10 : 1);
 			try {
 				Thread.sleep(rand.nextInt((int) toSleep0) + toSleep1); 
@@ -77,7 +78,9 @@ public class Lane implements Runnable{
 			}
 			Car toAdd = new Car(this.startId, this.endId, i);
 			this.queue.add(toAdd);
-			System.out.println(toAdd);
+			if(!sim) {
+				System.out.println(toAdd);
+			}
 		}
 	}
 	

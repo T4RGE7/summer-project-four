@@ -12,9 +12,11 @@ public class Intersection implements Runnable {
 	private boolean sim, northSouth;
 	final String[] directions = {"South", "West", "North", "East"}, turns = {"Left", "Straight", "Right"};
 	private long lastTimeChanged;
+	private long waitTime;
 	private Random rand;
+	private LinkedList<Long> times;
 	
-	public Intersection(int totalNumCars, double[] percentages, boolean sim) {
+	public Intersection(int totalNumCars, double[] percentages, boolean sim, long waitTime) {
 		this.threads = new Thread[4][3];
 		this.lanes = new Lane[4][3];
 		this.streets = new Street[4];
@@ -22,6 +24,8 @@ public class Intersection implements Runnable {
 		this.totalNumCars = totalNumCars;
 		this.percentages = percentages;
 		this.sim = sim;
+		this.times = new LinkedList<Long>();
+		this.waitTime = waitTime;
 		this.rand = new Random();
 		this.northSouth = rand.nextBoolean();
 		this.setUp();
@@ -55,38 +59,173 @@ public class Intersection implements Runnable {
 		this.lastTimeChanged = System.currentTimeMillis();
 		
 		int second = 0;
-		
+		int dir = (this.northSouth ? 0 : 1);
 		while(this.checkAlive() || this.checkNotEmpty()) {
+			dir = (this.northSouth ? 0 : 1);
 			second++;
 			//crossing
-			for(int i = 0; i < this.lanes.length; i++) {
-				for(int j = 0; j < this.lanes[i].length; j++) {
-					if(this.lights[i][j].isGreen()) {
-						Car toCross = this.lanes[i][j].cross();
-						if(toCross != null) {
-							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
-						}
-					} else if(this.lights[i][j].isYellow()) {
-						this.lights[i][j].cycle();
+//			for(int i = 0; i < this.lanes.length; i++) {
+//				for(int j = 0; j < this.lanes[i].length; j++) {
+//					if(this.lights[i][j].isGreen()) {
+//						Car toCross = this.lanes[i][j].cross();
+//						if(toCross != null) {
+//							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
+//						}
+//					} else if(this.lights[i][j].isYellow()) {
+//						this.lights[i][j].cycle();
+//					}
+//				}
+//			}
+			
+
+				this.leftTurn();
+				this.rightTurns();
+				this.straight();
+				
+				
+				this.leftSignal(dir);
+				this.centerSignal(dir);
+				this.rightSignal(dir);
+				
+
+			
+			if (this.lastTimeChanged + this.waitTime/(this.sim ? 10 : 1) < System.currentTimeMillis() /*|| this.checkForRed(dir)*/) {
+				if (this.timeToChange()) {
+					this.cycleToRed(dir);
+					this.sleep(1000/(this.sim ? 10 : 1));
+					this.cycleToRed(dir);
+					this.sleep(1000/(this.sim ? 10 : 1));
+					this.northSouth = !this.northSouth;
+					dir = (this.northSouth ? 0 : 1);
+					this.lastTimeChanged = System.currentTimeMillis() + 1000/(this.sim ? 10 : 1);
+					this.leftSignal(dir);
+					this.centerSignal(dir);
+					this.rightSignal(dir);
+					if (!sim) {
+						System.out.println("Directions changed");
 					}
 				}
 			}
-			
-			if (this.lastTimeChanged + 2000/(this.sim ? 10 : 1) < System.currentTimeMillis()) {
-				if (this.timeToChange()) {
-					this.cycleToRed((this.northSouth ? 0 : 1));
-					this.sleep(1000);
-					this.cycleToRed((this.northSouth ? 0 : 1));
-					this.sleep(1000);
-					this.northSouth = !this.northSouth;
-					this.lastTimeChanged = System.currentTimeMillis() + 1000/(this.sim ? 10 : 1);
-					this.changeToGreen((this.northSouth ? 0 : 1));
-					System.out.println("Directions changed");
+			if(!sim){
+			this.printSignals();
+	//		this.printLines();
+			System.out.println("Second: " + second);
+			}
+			this.sleep(1000/(this.sim ? 10 : 1));
+		}
+	}
+	
+	private void rightTurns() {
+		for(int i = 0; i < 4; i++) {
+			if(!this.lanes[i][2].isEmpty()) {
+				if((this.lanes[(i+1)%4][1].isEmpty() && (this.lanes[(i+2)%4][0].isEmpty()) || this.lights[(i+2)%4][0].isRed()) || (this.lights[i][2].isGreen())) {
+					Car toCross = this.lanes[i][2].cross();
+					if(toCross != null) {
+						if(!sim){
+							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
+						}
+						this.times.insert(toCross.getWaitingTime());
+					}
 				}
 			}
-			
-			System.out.println("Second: " + second);
-			this.sleep(1000/(this.sim ? 10 : 1));
+		}
+	}
+	
+	private void straight() {
+		for(int i = 0; i < 4; i++) {
+			if(!this.lanes[i][1].isEmpty()) {
+				if(this.lights[i][1].isGreen()) {
+					Car toCross = this.lanes[i][1].cross();
+					if(toCross != null) {
+						if(!sim){
+							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
+						}
+						this.times.insert(toCross.getWaitingTime());
+					}
+				}
+			}
+		}
+	}
+	
+	private void leftTurn() {
+		for(int i = 0; i < 4; i++) {
+			if(!this.lanes[i][0].isEmpty()) {
+				if((this.lights[i][0].isGreen()) || (this.lights[i][1].isGreen() && this.lanes[(i+2)%4][1].isEmpty() && this.lanes[(i+2)%4][2].isEmpty())) {
+					Car toCross = this.lanes[i][0].cross();
+					if(toCross != null) {
+						if(!sim){
+							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
+						}
+						this.times.insert(toCross.getWaitingTime());
+					}
+				}
+			}
+		}
+	}
+	
+	private boolean leftSignal(int j) {
+		boolean toReturn = false;
+		if(!this.lanes[j][0].isEmpty() && this.lights[j][0].isRed() && this.lights[(j+2)%4][1].isRed() && this.lights[(j+2)%4][2].isRed()) {
+			this.lights[j][0].cycle();
+			toReturn = true;
+		} else if(this.lanes[j][0].isEmpty() && this.lights[j][0].isGreen()) {
+			this.lights[j][0].cycle();
+			toReturn = true;
+		} else if(this.lights[j][0].isYellow()) {
+			this.lights[j][0].cycle();
+			toReturn = true;
+		}
+		j+=2;
+		
+		
+		if(!this.lanes[j][0].isEmpty() && this.lights[j][0].isRed() && this.lights[(j+2)%4][1].isRed() && this.lights[(j+2)%4][2].isRed()) {
+			this.lights[j][0].cycle();
+			toReturn = true;
+		} else if(this.lanes[j][0].isEmpty() && this.lights[j][0].isGreen()) {
+			this.lights[j][0].cycle();
+			toReturn = true;
+		} else if(this.lights[j][0].isYellow()) {
+			this.lights[j][0].cycle();
+			toReturn = true;
+		}
+		return toReturn;
+	}
+	
+	private void rightSignal(int j) {
+		if(!this.lanes[j][2].isEmpty() && ((this.lights[(j+2)%4][0].isRed()) || this.lights[j][1].isGreen())) {
+			this.lights[j][2].cycle();
+		} else if(this.lanes[j][2].isEmpty() && this.lights[j][2].isGreen()) {
+			this.lights[j][2].cycle();
+		} else if(this.lights[j][2].isYellow()) {
+			this.lights[j][2].cycle();
+		}
+		j+=2;
+		
+		if(!this.lanes[j][2].isEmpty() && ((this.lights[(j+2)%4][0].isRed()) || this.lights[j][1].isGreen())) {
+			this.lights[j][2].cycle();
+		} else if(this.lanes[j][2].isEmpty() && this.lights[j][2].isGreen()) {
+			this.lights[j][2].cycle();
+		} else if(this.lights[j][2].isYellow()) {
+			this.lights[j][2].cycle();
+		}
+	}
+	
+	private void centerSignal(int j) {
+		if(!this.lanes[j][1].isEmpty() && this.lights[j][1].isRed() && this.lights[(j+2)%4][0].isRed()) {
+			this.lights[j][1].cycle();
+		} else if(this.lanes[j][1].isEmpty() && this.lights[j][1].isGreen()) {
+			this.lights[j][1].cycle();
+		} else if(this.lights[j][1].isYellow()) {
+			this.lights[j][1].cycle();
+		}
+		j+=2;
+		
+		if(!this.lanes[j][1].isEmpty() && this.lights[j][1].isRed() && this.lights[(j+2)%4][0].isRed()) {
+			this.lights[j][1].cycle();
+		} else if(this.lanes[j][1].isEmpty() && this.lights[j][1].isGreen()) {
+			this.lights[j][1].cycle();
+		} else if(this.lights[j][1].isYellow()) {
+			this.lights[j][1].cycle();
 		}
 	}
 	
@@ -122,6 +261,15 @@ public class Intersection implements Runnable {
 		}
 	}
 	
+	private boolean checkForRed(int j) {
+		for(int i = 0; i < 3; i++) {
+			if(!this.lights[j][i].isRed() || !this.lights[(j+2)%4][i].isRed()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public boolean checkAlive() {
 		for(Thread[] group : this.threads) {
 			for(Thread t : group) {
@@ -130,18 +278,32 @@ public class Intersection implements Runnable {
 				}
 			}
 		}
+	//	System.out.println("All dead");
 		return false;
 	}
 	
 	public boolean checkNotEmpty() {
-		for(Lane[] street : this.lanes) {
-			for(Lane lane : street) {
-				if(!lane.isEmpty()) {
-					return true;
+		boolean toReturn = false;
+		for(int i = 0; i < this.lanes.length; i++) {
+			for(int j = 0; j < this.lanes[i].length; j++) {
+		//		System.out.print(this.lanes[i][j].size() + " ");
+				if(!this.lanes[i][j].isEmpty()) {
+					toReturn = true;
+					break;
 				}
 			}
+	//		System.out.println();
 		}
-		return false;
+		return toReturn;
+	}
+	
+	public void printLines() {
+		for(int i = 0; i < this.lanes.length; i++) {
+			for(int j = 0; j < this.lanes[i].length; j++) {
+				System.out.print(this.lanes[i][j].size() + " ");
+			}
+			System.out.println();
+		}
 	}
 	
 	private void sleep(long time) {
@@ -165,5 +327,37 @@ public class Intersection implements Runnable {
 			}
 		}
 		return false;
+	}
+	
+	private void printSignals() {
+		System.out.print("\t");
+		for(int i = 0; i < 3; i++) {
+			System.out.print(" " + this.lanes[2][2-i].size() + " ");
+		}
+		System.out.print("\n\t");
+		for(int i = 0; i < 3; i++) {
+			System.out.print(this.lights[2][2-i] + " ");
+		}
+		System.out.println();
+		for(int i = 0; i < 3; i++) {
+			System.out.println("\t\t\t\t" + this.lights[3][2-i] + " " + this.lanes[3][2-i].size());
+		}
+		System.out.println();
+		for(int i = 0; i < 3; i++) {
+			System.out.println(this.lanes[1][i].size() + " " + this.lights[1][i]);
+		}
+		System.out.print("\t\t\t");
+		for(int i = 0; i < 3; i++) {
+			System.out.print(this.lights[0][i] + " ");
+		}
+		System.out.print("\n\t\t\t");
+		for(int i = 0; i < 3; i++) {
+			System.out.print(" " + this.lanes[0][i].size() + " ");
+		}
+		System.out.println();
+	}
+	
+	public LinkedList<Long> getWaitingTimes() {
+		return this.times;
 	}
 }

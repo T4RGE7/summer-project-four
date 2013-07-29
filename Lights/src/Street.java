@@ -32,10 +32,10 @@ public class Street implements Runnable {
 		for(int i = 0; i < this.lanes.length; i++) {
 			this.lanes[i] = new Lane(this.startId, i, this.adjusted, this.percentages[i], this.sim);
 			this.threads[i] = new Thread(this.lanes[i]);
-			System.out.println(this.threads[i]);
+	//		System.out.println(this.threads[i]);
 			this.lights[i] = this.lanes[i].getLight();
 		}
-		//this.lights[2] = this.lights[1];
+	//	this.lights[2] = this.lights[1];
 	}
 
 	@Override
