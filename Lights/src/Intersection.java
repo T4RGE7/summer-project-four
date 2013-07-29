@@ -296,12 +296,12 @@ public class Intersection implements Runnable {
 		boolean toReturn = false;
 		long testing[] = new long[4];
 		try{
-			testing[0] = (long)Math.sqrt(this.lanes[j][1].weightedAvg()/(this.lanes[j][1].size() == 0 ? 1 : this.lanes[j][0].size()));
+			testing[0] = (long)Math.sqrt(this.lanes[j][1].weightedAvg()/(this.lanes[j][1].size() == 0 ? 1 : this.lanes[j][0].size()))/(this.sim ? 10 : 1);
 		} catch (ArithmeticException e) {
 			testing[0] = 0;
 		}
 		try{
-			testing[1] = (long)Math.sqrt(this.lanes[j+2][1].weightedAvg()/(this.lanes[j+2][1].size() == 0 ? 1 : this.lanes[j][1].size()));
+			testing[1] = (long)Math.sqrt(this.lanes[j+2][1].weightedAvg()/(this.lanes[j+2][1].size() == 0 ? 1 : this.lanes[j][1].size()))/(this.sim ? 10 : 1);
 		} catch (ArithmeticException e) {
 			testing[1] = 0;
 		}
@@ -310,9 +310,9 @@ public class Intersection implements Runnable {
 //		testing[3] = (long)Math.sqrt(this.lanes[j][1].weightedAvg()/(this.lanes[j][1].size() == 0 ? 1 : this.lanes[j][1].size()));;
 //		
 		for(long toTest : testing) {
-			if(toTest > 8*this.waitTime || toTest > Math.pow(this.waitTime, 4)) {
+			if(toTest > 8*this.waitTime/(this.sim ? 10 : 1) || toTest > Math.pow(this.waitTime / (this.sim ? 10 : 1), 4)) {
 				toReturn = true;
-				double[] percentages = {.25,.25,.25,.25};
+				//double[] percentages = {.25,.25,.25,.25};
 				System.out.println("Forced");
 				break;
 			}
@@ -372,9 +372,13 @@ public class Intersection implements Runnable {
 		if(this.northSouth) {
 			if(this.getCombinedAvg(0) < this.getCombinedAvg(1)) {
 				return true;
+			} else if(this.getCombinedAvg(0) <= 1) {
+				return true;
 			}
 		} else {
 			if(this.getCombinedAvg(0) > this.getCombinedAvg(1)) {
+				return true;
+			} else if(this.getCombinedAvg(1) <= 1) {
 				return true;
 			}
 		}

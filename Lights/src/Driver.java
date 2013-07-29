@@ -31,7 +31,7 @@ public class Driver {
 		
 		int numCars = 100;
 	//	double[] percentages = {.25,.25,.25,.25};
-		long waitTime = 2500;
+		long waitTime = 2900;
 		Intersection test;// = new Intersection(numCars, percentages, sim, waitTime);
 //		LinkedList<Long> times = test.getWaitingTimes();
 		long high = -1, low = -1, current = -1;
@@ -105,7 +105,7 @@ public class Driver {
 		long lowWaitTime = 0;
 		boolean strikeOne = false;
 		boolean up = false;
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < 20; i++) {
 			test = new Intersection(numCars, percentages, true, waitTime);
 			LinkedList<Long> times = test.getWaitingTimes();
 			Thread t = new Thread(test);
@@ -171,7 +171,7 @@ public class Driver {
 			
 			
 		
-		System.out.println("Best wait time estimated to be: " + lowWait/1000.0 + " seconds, for an average wait time of " + lowWaitTime + " seconds per car.");
+		System.out.println("Best minimum light wait time estimated to be: " + lowWait/1000.0 + " seconds, for an average wait time of " + lowWaitTime + " seconds per car.");
 	
 		Thread last;
 		if(sim) {
