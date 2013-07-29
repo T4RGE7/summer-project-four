@@ -120,7 +120,7 @@ public class Car {
 			}
 			break;
 		case 2: this.rotation = 180;
-			this.x = 75 + 30*(this.endId);
+			this.x = 75 + 30*(2-this.endId);
 			this.y = 30;
 			if(this.endId == 0) {
 				this.anchorX = 270;
@@ -138,7 +138,7 @@ public class Car {
 			break;
 		case 3: this.rotation = 270;
 			this.x = 300;
-			this.y = 135 - 30*(this.endId);
+			this.y = 75 + 30*(2-this.endId);
 			if(this.endId == 0) {
 				this.anchorX = 270;
 				this.anchorY = 270;

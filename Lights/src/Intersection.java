@@ -88,7 +88,9 @@ public class Intersection implements Runnable {
 				
 				
 				this.leftSignal(dir);
-				this.centerSignal(dir);
+				if(this.centerSignal(dir)) {
+					this.lastTimeChanged = System.currentTimeMillis() + 1000/(this.sim ? 10 : 1);
+				}
 				this.rightSignal(dir);
 				
 
@@ -217,9 +219,11 @@ public class Intersection implements Runnable {
 		}
 	}
 	
-	private void centerSignal(int j) {
+	private boolean centerSignal(int j) {
+		boolean toReturn = false;
 		if(!this.lanes[j][1].isEmpty() && this.lights[j][1].isRed() && this.lights[(j+2)%4][0].isRed()) {
 			this.lights[j][1].cycle();
+			toReturn = true;
 		} else if(this.lanes[j][1].isEmpty() && this.lights[j][1].isGreen()) {
 			this.lights[j][1].cycle();
 		} else if(this.lights[j][1].isYellow()) {
@@ -229,11 +233,13 @@ public class Intersection implements Runnable {
 		
 		if(!this.lanes[j][1].isEmpty() && this.lights[j][1].isRed() && this.lights[(j+2)%4][0].isRed()) {
 			this.lights[j][1].cycle();
+			toReturn = true;
 		} else if(this.lanes[j][1].isEmpty() && this.lights[j][1].isGreen()) {
 			this.lights[j][1].cycle();
 		} else if(this.lights[j][1].isYellow()) {
 			this.lights[j][1].cycle();
 		}
+		return toReturn;
 	}
 	
 	private void cycleToRed(int j) {
@@ -343,19 +349,27 @@ public class Intersection implements Runnable {
 		}
 		System.out.print("\n\t");
 		for(int i = 0; i < 3; i++) {
+			System.out.print(" " + (this.lanes[2][2-i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[2][2-i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " ");
+		}
+		System.out.print("\n\t");
+		for(int i = 0; i < 3; i++) {
 			System.out.print(this.lights[2][2-i] + " ");
 		}
 		System.out.println();
 		for(int i = 0; i < 3; i++) {
-			System.out.println("\t\t\t\t" + this.lights[3][2-i] + " " + this.lanes[3][2-i].size());
+			System.out.println("\t\t\t\t" + (this.lanes[3][2-i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[3][2-i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " " + this.lights[3][2-i] + " " + this.lanes[3][2-i].size());
 		}
 		System.out.println();
 		for(int i = 0; i < 3; i++) {
-			System.out.println(this.lanes[1][i].size() + " " + this.lights[1][i]);
+			System.out.println(this.lanes[1][i].size() + " " + (this.lanes[1][i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[1][i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " " + this.lights[1][i]);
 		}
 		System.out.print("\t\t\t");
 		for(int i = 0; i < 3; i++) {
 			System.out.print(this.lights[0][i] + " ");
+		}
+		System.out.print("\n\t\t\t");
+		for(int i = 0; i < 3; i++) {
+			System.out.print(" " + (this.lanes[0][i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[0][i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " ");
 		}
 		System.out.print("\n\t\t\t");
 		for(int i = 0; i < 3; i++) {
@@ -406,11 +420,11 @@ public class Intersection implements Runnable {
 			g.fillOval(70, 182 + 30 * i, 20, 20);
 		}
 		for(int i = 0; i < this.lights[2].length; i++) {
-			g.setColor(this.lights[2][i].getColor());
+			g.setColor(this.lights[2][2-i].getColor());
 			g.fillOval(62 + 30 * i, 70, 20, 20);
 		}
 		for(int i = 0; i < this.lights[3].length; i++) {
-			g.setColor(this.lights[3][i].getColor());
+			g.setColor(this.lights[3][2-i].getColor());
 			g.fillOval(230, 62 + 30 * i, 20, 20);
 		}
 		

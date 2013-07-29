@@ -52,8 +52,6 @@ public class Lane implements Runnable{
 		try {
 			return this.queue.peekFirst();
 		} catch (EmptyListException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return null;
 	}
