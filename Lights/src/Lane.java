@@ -87,7 +87,7 @@ public class Lane implements Runnable{
 			Car toAdd = new Car(this.startId, this.endId, i);
 			this.queue.add(toAdd);
 			if(!sim) {
-				System.out.println(toAdd);
+		//		System.out.println(toAdd);
 			}
 		}
 	}

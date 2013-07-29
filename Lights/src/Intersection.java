@@ -1,5 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Random;
 
 
@@ -18,6 +20,7 @@ public class Intersection implements Runnable {
 	private Random rand;
 	private LinkedList<Long> times;
 	private LinkedList<Car> toDraw;
+	private PrintWriter printer;
 	
 	public Intersection(int totalNumCars, double[] percentages, boolean sim, long waitTime) {
 		this.threads = new Thread[4][3];
@@ -31,6 +34,9 @@ public class Intersection implements Runnable {
 		this.times = new LinkedList<Long>();
 		this.waitTime = waitTime;
 		this.rand = new Random();
+		try {
+			this.printer = new PrintWriter("lastRun.txt");
+		} catch (IOException e) {}
 		this.northSouth = rand.nextBoolean();
 		this.setUp();
 	}
@@ -87,7 +93,9 @@ public class Intersection implements Runnable {
 				this.straight();
 				
 				
-				this.leftSignal(dir);
+				if(this.leftSignal(dir)) {
+				//	this.lastTimeChanged = System.currentTimeMillis() + 500/(this.sim ? 10 : 1);
+				}
 				if(this.centerSignal(dir)) {
 					this.lastTimeChanged = System.currentTimeMillis() + 1000/(this.sim ? 10 : 1);
 				}
@@ -108,14 +116,14 @@ public class Intersection implements Runnable {
 					this.centerSignal(dir);
 					this.rightSignal(dir);
 					if (!sim) {
-						System.out.println("Directions changed");
+					//	System.out.println("Directions changed");
 					}
 				}
 			}
 			if(!sim){
-			this.printSignals();
+	//		System.out.println(this.printSignals());
 	//		this.printLines();
-			System.out.println("Second: " + second);
+		//	System.out.println("Second: " + second);
 			}
 			this.sleep(1000/(this.sim ? 10 : 1));
 		}
@@ -129,7 +137,7 @@ public class Intersection implements Runnable {
 					if(toCross != null) {
 						if(!sim){
 							this.toDraw.insertLast(toCross);
-							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
+							this.printer.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()] + ", Seconds waiting: " + (System.currentTimeMillis() - toCross.getCreationTime())/(this.sim ? 100 : 1000));
 						}
 						this.times.insert(toCross.getWaitingTime());
 					}
@@ -146,7 +154,7 @@ public class Intersection implements Runnable {
 					if(toCross != null) {
 						if(!sim){
 							this.toDraw.insertLast(toCross);
-							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
+							this.printer.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()] + ", Seconds waiting: " + (System.currentTimeMillis() - toCross.getCreationTime())/(this.sim ? 100 : 1000));
 						}
 						this.times.insert(toCross.getWaitingTime());
 					}
@@ -163,7 +171,7 @@ public class Intersection implements Runnable {
 					if(toCross != null) {
 						if(!sim){
 							this.toDraw.insertLast(toCross);
-							System.out.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()]);
+							this.printer.println("Car " + this.directions[toCross.getStartId()] + " lane went " + this.turns[toCross.getEndId()] + ", Seconds waiting: " + (System.currentTimeMillis() - toCross.getCreationTime())/(this.sim ? 100 : 1000));
 						}
 						this.times.insert(toCross.getWaitingTime());
 					}
@@ -200,9 +208,11 @@ public class Intersection implements Runnable {
 		return toReturn;
 	}
 	
-	private void rightSignal(int j) {
+	private boolean rightSignal(int j) {
+		boolean toReturn = false;
 		if(!this.lanes[j][2].isEmpty() && ((this.lights[(j+2)%4][0].isRed()) || this.lights[j][1].isGreen())) {
 			this.lights[j][2].cycle();
+			toReturn = true;
 		} else if(this.lanes[j][2].isEmpty() && this.lights[j][2].isGreen()) {
 			this.lights[j][2].cycle();
 		} else if(this.lights[j][2].isYellow()) {
@@ -212,11 +222,13 @@ public class Intersection implements Runnable {
 		
 		if(!this.lanes[j][2].isEmpty() && ((this.lights[(j+2)%4][0].isRed()) || this.lights[j][1].isGreen())) {
 			this.lights[j][2].cycle();
+			toReturn = true;
 		} else if(this.lanes[j][2].isEmpty() && this.lights[j][2].isGreen()) {
 			this.lights[j][2].cycle();
 		} else if(this.lights[j][2].isYellow()) {
 			this.lights[j][2].cycle();
 		}
+		return toReturn;
 	}
 	
 	private boolean centerSignal(int j) {
@@ -342,40 +354,42 @@ public class Intersection implements Runnable {
 		return false;
 	}
 	
-	private void printSignals() {
-		System.out.print("\t");
+	private String printSignals() {
+		String toReturn = "\n";
+		toReturn += "\t";
 		for(int i = 0; i < 3; i++) {
-			System.out.print(" " + this.lanes[2][2-i].size() + " ");
+			toReturn +=" " + this.lanes[2][2-i].size() + " ";
 		}
-		System.out.print("\n\t");
+		toReturn +="\n\t";
 		for(int i = 0; i < 3; i++) {
-			System.out.print(" " + (this.lanes[2][2-i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[2][2-i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " ");
+			toReturn += " " + (this.lanes[2][2-i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[2][2-i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " ";
 		}
-		System.out.print("\n\t");
+		toReturn += "\n\t";
 		for(int i = 0; i < 3; i++) {
-			System.out.print(this.lights[2][2-i] + " ");
+			toReturn += this.lights[2][2-i] + " ";
 		}
-		System.out.println();
+		toReturn += "\n";
 		for(int i = 0; i < 3; i++) {
-			System.out.println("\t\t\t\t" + (this.lanes[3][2-i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[3][2-i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " " + this.lights[3][2-i] + " " + this.lanes[3][2-i].size());
+			toReturn += "\t\t\t\t" + this.lights[3][2-i] + " " + (this.lanes[3][2-i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[3][2-i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " "  + this.lanes[3][2-i].size() + "\n";
 		}
-		System.out.println();
+		toReturn += "\n";
 		for(int i = 0; i < 3; i++) {
-			System.out.println(this.lanes[1][i].size() + " " + (this.lanes[1][i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[1][i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " " + this.lights[1][i]);
+			toReturn += this.lanes[1][i].size() + " " + (this.lanes[1][i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[1][i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " " + this.lights[1][i] + "\n";
 		}
-		System.out.print("\t\t\t");
+		toReturn += "\t\t\t";
 		for(int i = 0; i < 3; i++) {
-			System.out.print(this.lights[0][i] + " ");
+			toReturn += this.lights[0][i] + " ";
 		}
-		System.out.print("\n\t\t\t");
+		toReturn += "\n\t\t\t";
 		for(int i = 0; i < 3; i++) {
-			System.out.print(" " + (this.lanes[0][i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[0][i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " ");
+			toReturn += " " + (this.lanes[0][i].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[0][i].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " ";
 		}
-		System.out.print("\n\t\t\t");
+		toReturn += "\n\t\t\t";
 		for(int i = 0; i < 3; i++) {
-			System.out.print(" " + this.lanes[0][i].size() + " ");
+			toReturn += " " + this.lanes[0][i].size() + " ";
 		}
-		System.out.println();
+		toReturn += "\n";
+		return toReturn;
 	}
 	
 	public LinkedList<Long> getWaitingTimes() {
@@ -428,5 +442,14 @@ public class Intersection implements Runnable {
 			g.fillOval(230, 62 + 30 * i, 20, 20);
 		}
 		
+		g.setColor(Color.black);
+		for(int i = 0; i < this.lanes.length; i++) {
+			canvas.drawString(g, this.directions[i], 350, 70*i + 30);
+			for(int j = 0; j < this.lanes[i].length; j++) {
+				canvas.drawString(g, this.turns[j] + ") " + this.lanes[i][j].size() + " Cars " + (this.lanes[i][j].peekFirst() == null ? 0 : (int)(System.currentTimeMillis() - this.lanes[i][j].peekFirst().getCreationTime())/(this.sim ? 100 : 1000)) + " Seconds Waiting", 360, 70*i + 42 + 15*j); 
+			}
+		}
+		
 	}
+
 }

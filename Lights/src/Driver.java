@@ -1,4 +1,8 @@
-
+/**
+ * 
+ * @author James Roberts jpr242
+ *
+ */
 public class Driver {
 	
 	public static void main(String[] args) {
@@ -80,7 +84,7 @@ public class Driver {
 		long lowWaitTime = 0;
 		boolean strikeOne = false;
 		boolean up = false;
-		for(int i = 0; i < 1; i++) {
+		for(int i = 0; i < 10; i++) {
 			test = new Intersection(numCars, percentages, true, waitTime);
 			LinkedList<Long> times = test.getWaitingTimes();
 			Thread t = new Thread(test);
@@ -120,7 +124,7 @@ public class Driver {
 				}
 			}*/
 			else {
-				if(sum > current + (lowWaitTime * 1000)) {
+				if(sum > current + (lowWaitTime * numCars / 10)) {
 					up = !up;
 					if (!strikeOne) {
 						strikeOne = true;
@@ -151,12 +155,24 @@ public class Driver {
 		Thread last;
 		if(sim) {
 			test = new Intersection(numCars, percentages, false, lowWait);
-			JimsCanvas canvas = new JimsCanvas(330, 330, test);
+			JimsCanvas canvas = new JimsCanvas(650, 330, test);
 			canvas.setupAndDisplay();
 			last = new Thread(test);
 			last.run();
+			LinkedList<Long> times = test.getWaitingTimes();
 			try {
 				last.join();
+				canvas.setVisible(false);
+				long sum = 0;
+				int total = 0;
+				while(!times.isEmpty()) {
+					try {
+						sum += times.remove();
+						total++;
+					} catch (EmptyListException e) {break;}
+				}
+				System.out.println(total  + " total cars passed through with an average wait of " + sum/(total*1000) + " seconds. (WaitTime = " + waitTime + ")");
+				System.exit(0);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
