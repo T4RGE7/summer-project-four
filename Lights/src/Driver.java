@@ -194,7 +194,7 @@ public class Driver {
 						total++;
 					} catch (EmptyListException e) {break;}
 				}
-				System.out.println(total  + " total cars passed through with an average wait of " + sum/(total*1000) + " seconds. (WaitTime = " + waitTime + ")");
+				System.out.println(total  + " total cars passed through with an average wait of " + sum/(total*1000) + " seconds. (WaitTime = " + lowWait + ")");
 				System.exit(0);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
